@@ -1,0 +1,17 @@
+## .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## IDE
+.vs/
+.vscode/
+
+## Generated manifests
+migration_audit.csv
+migration_manifest*.csv
