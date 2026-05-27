@@ -75,6 +75,12 @@ if (args.Any(a => string.Equals(a, "--test-rest", StringComparison.OrdinalIgnore
     return;
 }
 
+if (args.Any(a => string.Equals(a, "--scan", StringComparison.OrdinalIgnoreCase)))
+{
+    await ScanService.ScanSourceList(config);
+    return;
+}
+
 Console.WriteLine("SharePoint Migration Tool v2");
 Console.WriteLine("==========================\n");
 
