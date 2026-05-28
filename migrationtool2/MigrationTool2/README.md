@@ -23,6 +23,7 @@ dotnet run -- --verify      # compare source vs destination
 | Flag | Description |
 |------|-------------|
 | *(no flag)* | Run migration normally |
+| `--scan` | Analyse source list schema, field types, item count, and migration risks |
 | `--clean` | Delete destination list before migration |
 | `--verify` | Compare source/dest items (Created, Modified, Author) |
 | `--test-rest` | Ad-hoc REST API diagnostic tests |
@@ -105,6 +106,43 @@ Opens a browser prompt for user login at runtime.
 3. **System Field Preservation** — Uses `ValidateUpdateListItem` with `bNewDocumentUpdate=true` to set Author, Editor, Created, Modified dates
 4. **Timezone Handling** — Queries the SharePoint site's timezone settings and converts UTC source dates to site-local time before writing
 5. **Verification** — Reads both source and destination items and compares Created/Modified dates (with tolerance for seconds truncation) and field values
+
+## Scan (`--scan`)
+
+Analyses a source list without modifying anything. The report includes:
+
+| Item | Description |
+|------|-------------|
+| **Field table** | Each column: internal name, display name, type, category (Simple / Lookup / User / Taxonomy / Unsupported) |
+| **Category counts** | Aggregate breakdown of field complexity |
+| **Risks / Blockers** | Unsupported field types, out-of-scope lookup targets, large item counts, many columns, doc libraries, taxonomy/user dependencies |
+| **Time estimate** | Rough migration time based on item count + complex field overhead |
+| **Complexity** | `SIMPLE` / `MODERATE` / `COMPLEX` / `BLOCKED` |
+
+Example output:
+
+```
+SCAN REPORT: Mobile Orders
+══════════════════════════════════════════════════
+  List:         Mobile Orders
+  Template:     100 (Generic List)
+  Items:        3
+
+  InternalName  Title       Type     Category  Detail
+  ─────────────────────────────────────────────────────
+  Title         Title       Text   ✓  Simple
+  phonemodel    phonemodel  Lookup ⚠  Lookup   → 'Mobile Phones' ⚠ out of scope
+
+  CATEGORIES
+    Simple:      5
+    Lookup:      1
+
+  RISKS
+  ⚠ Lookup 'phonemodel' targets 'Mobile Phones' which is not in migration scope
+
+  ESTIMATED TIME:  ~1s
+  COMPLEXITY: MODERATE
+```
 
 ## What's Migrated
 
